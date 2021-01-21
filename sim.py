@@ -10,6 +10,8 @@ w = 0.09    # width of robot
 delta_t = 0.1   # time step in seconds
 x0 = 0
 y0 = 0      # initial coordinates of robot
+B_x = 0     # Earth's magnetic field, replace later
+B_y = 0
 
 
 # run a full simulation
@@ -100,10 +102,16 @@ def simulate_step(state_k, input_k):
 
 
     # Take Readings
+    l1_k = f1(state_k, regionF)
+    l2_k = f2(state_k, regionR)
+    big_omega_k = (d/(2*w))*(omegaR_k+omegaL_k)
+    b1_k = B_x*cos(theta_k) - B_y*sin(theta_k)
+    b2_k = B_x*sin(theta_k) + B_y*cos(theta_k)
 
+    next_state = (x_next, y_next, theta_next)
+    sensor_readings = (l1_k, l2_k, big_omega_k, b1_k, b2_k)
 
-
-    pass
+    return [next_state, sensor_readings]
 
 
 # Front LIDAR function
