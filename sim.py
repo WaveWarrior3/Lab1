@@ -1,10 +1,10 @@
-from math import sin, cos, pi
+from math import sin, cos, pi, atan
 
 
 
 # Hyperparameters (all lengths in meters)
 L = 10  # Length of arena
-W = 10  # Width of arena
+H = 10  # Width of arena
 d = 0.05    # wheel diameter
 w = 0.09    # width of robot
 delta_t = 0.1   # time step in seconds
@@ -37,6 +37,8 @@ def simulate_step(state_k, input_k):
     omegaR_k = input_k[0]
     omegaL_k = input_k[1]
 
+
+
     # state update
     x_next = x_k + (((d*delta_t/4)*cos(theta_k))*omegaR_k) - (((d*delta_t/4)*cos(theta_k))*omegaL_k)    #no noise component yet
     y_next = y_k + (((d*delta_t/4)*sin(theta_k))*omegaR_k) - (((d*delta_t/4)*sin(theta_k))*omegaL_k)    #no noise component yet
@@ -48,11 +50,11 @@ def simulate_step(state_k, input_k):
     elif x_next > L:
         x_next = L
 
-    # bound y between 0 and W
+    # bound y between 0 and H
     if y_next < 0:
         y_next = 0
-    elif y_next > W:
-        y_next = W
+    elif y_next > H:
+        y_next = H
 
     # normalize theta between 0 and 2*pi
     if theta_next < 0:
@@ -60,13 +62,86 @@ def simulate_step(state_k, input_k):
     elif theta_next > 2*pi:
         theta_next -= 2*pi
 
-    # sensor readings
+
+
+
+    # find regions for LIDAR readings
+    regionF = None
+    regionR = None
+
+
+    if 0 <= theta_k <= atan((L-x_k)/(H-y_k)) or (3*pi/2 + atan((H-y_k)/x_k)) <= theta_k <= 2*pi:
+        regionF = 1
+    elif atan((L-x_k)/(H-y_k)) <= theta_k <= (pi/2 + atan(y_k/(L-x_k))):
+        regionF = 2
+    elif (pi/2 + atan(y_k/(L-x_k))) <= theta_k <= (pi + atan(x_k/y_k)):
+        regionF = 3
+    elif (pi + atan(x_k/y_k)) <= theta_k <= (3*pi/2 + atan((H-y_k)/x_k)):
+        regionF = 4
+
+    if regionF == None:
+        print("Something has gone horribly wrong with Front LIDAR")
+        return
+
+
+    if 0 <= theta_k <= atan(y_k/(L-x_k)) or (3*pi/2 + atan((L-x_k)/(H-y_k))) <= theta_k <= 2*pi:
+        regionR = 1
+    elif atan(y_k/(L-x_k)) <= theta_k <= (pi/2 + atan(x_k/y_k)):
+        regionR = 2
+    elif (pi/2 + atan(x_k/y_k)) <= theta_k <= (pi + atan((H-y_k)/x_k)):
+        regionR = 3
+    elif (pi + atan((H-y_k)/x_k)) <= theta_k <= (3*pi/2 + atan((L-x_k)/(H-y_k))):
+        regionR = 4
+
+    if regionR == None:
+        print("Something has gone horribly wrong with Right LIDAR")
+        return
+
+
+
+    # Take Readings
 
 
 
     pass
 
 
+# Front LIDAR function
+def f1(state_k, regionF):
+    x_k = state_k[0]
+    y_k = state_k[1]
+    theta_k = state_k[2]
+
+    if regionF == 1:
+        return ((H-y_k)/cos(theta_k))
+    elif regionF == 2:
+        return ((L-x_k)/sin(theta_k))
+    elif regionF == 3:
+        return(-y_k/cos(theta_k))
+    elif regionF == 4:
+        return(-x_k/sin(theta_k))
+    else:
+        print("Bad Front Region")
+        return
+
+
+
+def f2(state_k, regionR):
+    x_k = state_k[0]
+    y_k = state_k[1]
+    theta_k = state_k[2]
+
+    if regionR == 1:
+        return ((L-x_k)/cos(theta_k))
+    elif regionR == 2:
+        return (y_k/sin(theta_k))
+    elif regionR == 3:
+        return(-x_k/cos(theta_k))
+    elif regionR == 4:
+        return(-(H-y_k)/sin(theta_k))
+    else:
+        print("Bad Right Region")
+        return
 
 if __name__ == "__main__":
     simulate()
