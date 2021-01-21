@@ -1,4 +1,4 @@
-from math import *
+from math import sin, cos, pi
 
 
 
@@ -48,7 +48,7 @@ def simulate_step(state_k, input_k):
     elif x_next > L:
         x_next = L
 
-    # bound y between 0 and R
+    # bound y between 0 and W
     if y_next < 0:
         y_next = 0
     elif y_next > W:
@@ -57,7 +57,7 @@ def simulate_step(state_k, input_k):
     # normalize theta between 0 and 2*pi
     if theta_next < 0:
         theta_next += 2*pi
-    elif theta_next > 360:
+    elif theta_next > 2*pi:
         theta_next -= 2*pi
 
     # sensor readings
