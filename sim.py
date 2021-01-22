@@ -118,10 +118,8 @@ def plot_path(state_list):
     
 
 
-
-
 if __name__ == "__main__":
-    init_state = (0.5, 0.5, 0.0)
+    init_state = (0.5, 0.5, pi)
     input_list = []
     for i in np.arange(100):
         input_list.append((1.0, -0.2))
