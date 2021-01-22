@@ -47,19 +47,19 @@ def simulate_step(state_k, input_k):
     theta_next = theta_k + ((d*delta_t/(2*w))*omegaR_k) + ((d*delta_t/(2*w))*omegaL_k)                  #no noise component yet
 
     # bound x between 0 and L
-    if x_next < 0:
-        x_next = 0
+    if x_next < 0.0:
+        x_next = 0.0
     elif x_next > L:
         x_next = L
 
     # bound y between 0 and H
     if y_next < 0:
-        y_next = 0
+        y_next = 0.0
     elif y_next > H:
         y_next = H
 
     # normalize theta between 0 and 2*pi
-    if theta_next < 0:
+    if theta_next < 0.0:
         theta_next += 2*pi
     elif theta_next > 2*pi:
         theta_next -= 2*pi
@@ -152,4 +152,9 @@ def f2(state_k, regionR):
         return
 
 if __name__ == "__main__":
-    simulate()
+    curr_state = (0, 0, 0)
+    curr_input = (1, 0)
+
+    next_state, sensor_readings = simulate_step(curr_state, curr_input)
+    print(next_state)
+    print(sensor_readings)
