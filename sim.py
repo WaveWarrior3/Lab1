@@ -105,7 +105,13 @@ def simulate_step(state_k, input_k):
     # Take Readings
     l1_k = L - x_k
     l2_k = H - y_k
+    
     big_omega_k = (d/(2*w))*(omegaR_k+omegaL_k)
+    if big_omega_k < 0.0:
+        big_omega_k += 2*pi
+    elif big_omega_k > 2*pi:
+        big_omega_k -= 2*pi
+
     b1_k = B_x*cos(theta_k) - B_y*sin(theta_k)
     b2_k = B_x*sin(theta_k) + B_y*cos(theta_k)
 
@@ -157,7 +163,7 @@ def f2(state_k, regionR):
 
 if __name__ == "__main__":
     curr_state = (0.0, 0.0, 0.0)
-    curr_input = (1.0, 0.0)
+    curr_input = (-1.0, -1.0)
 
     next_state, sensor_readings = simulate_step(curr_state, curr_input)
     print(next_state)
