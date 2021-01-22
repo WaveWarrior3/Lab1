@@ -78,8 +78,8 @@ def simulate_step(state_k, input_k):
 
 
     # Take Readings
-    l1_k = L - x_k
-    l2_k = H - y_k
+    l1_k = H - y_k
+    l2_k = L - x_k
 
     big_omega_k = (d/(2*w))*(omegaR_k+omegaL_k)
     if big_omega_k < 0.0:
