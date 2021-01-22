@@ -11,7 +11,7 @@ delta_t = 0.1   # time step in seconds
 x0 = 0
 y0 = 0      # initial coordinates of robot
 B_x = 0     # Earth's magnetic field, replace later
-B_y = 0
+B_y = 1
 
 
 # run a full simulation
@@ -42,8 +42,8 @@ def simulate_step(state_k, input_k):
 
 
     # state update
-    x_next = x_k + (((d*delta_t/4)*cos(theta_k))*omegaR_k) - (((d*delta_t/4)*cos(theta_k))*omegaL_k)    #no noise component yet
-    y_next = y_k + (((d*delta_t/4)*sin(theta_k))*omegaR_k) - (((d*delta_t/4)*sin(theta_k))*omegaL_k)    #no noise component yet
+    x_next = x_k + (-((d*delta_t/4)*sin(theta_k))*omegaR_k) + (((d*delta_t/4)*sin(theta_k))*omegaL_k)    #no noise component yet
+    y_next = y_k + (-((d*delta_t/4)*cos(theta_k))*omegaR_k) + (((d*delta_t/4)*cos(theta_k))*omegaL_k)    #no noise component yet
     theta_next = theta_k + ((d*delta_t/(2*w))*omegaR_k) + ((d*delta_t/(2*w))*omegaL_k)                  #no noise component yet
 
     # bound x between 0 and L
@@ -65,7 +65,7 @@ def simulate_step(state_k, input_k):
         theta_next -= 2*pi
 
 
-
+    '''
 
     # find regions for LIDAR readings
     regionF = None
@@ -99,11 +99,12 @@ def simulate_step(state_k, input_k):
         print("Something has gone horribly wrong with Right LIDAR")
         return
 
+    '''
 
 
     # Take Readings
-    l1_k = f1(state_k, regionF)
-    l2_k = f2(state_k, regionR)
+    l1_k = L - x_k
+    l2_k = H - y_k
     big_omega_k = (d/(2*w))*(omegaR_k+omegaL_k)
     b1_k = B_x*cos(theta_k) - B_y*sin(theta_k)
     b2_k = B_x*sin(theta_k) + B_y*cos(theta_k)
@@ -114,6 +115,7 @@ def simulate_step(state_k, input_k):
     return [next_state, sensor_readings]
 
 
+'''
 # Front LIDAR function
 def f1(state_k, regionF):
     x_k = state_k[0]
@@ -151,9 +153,11 @@ def f2(state_k, regionR):
         print("Bad Right Region")
         return
 
+'''
+
 if __name__ == "__main__":
-    curr_state = (0, 0, 0)
-    curr_input = (1, 0)
+    curr_state = (0.0, 0.0, 0.0)
+    curr_input = (1.0, 0.0)
 
     next_state, sensor_readings = simulate_step(curr_state, curr_input)
     print(next_state)
