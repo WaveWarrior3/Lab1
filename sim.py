@@ -36,8 +36,8 @@ def simulate(input_list, init_state):
 def simulate_step(state_k, input_k):
     '''
     Inputs:
-    state_t: tuple of x, y, and theta at time k
-    input_t: tuple of left wheel velocity and right wheel velocity
+    state_t: tuple of x, y, and theta at time k, in that order
+    input_t: tuple of left wheel velocity and right wheel velocity, in that order
 
     Outputs:
     next_state: x, y, and theta at time k+1
@@ -49,8 +49,8 @@ def simulate_step(state_k, input_k):
     y_k = state_k[1]
     theta_k = state_k[2]
 
-    omegaR_k = input_k[0]
-    omegaL_k = input_k[1]
+    omegaL_k = input_k[0]
+    omegaR_k = input_k[1]
 
 
 
@@ -78,42 +78,6 @@ def simulate_step(state_k, input_k):
         theta_next -= 2*pi
 
 
-    '''
-
-    # find regions for LIDAR readings
-    regionF = None
-    regionR = None
-
-
-    if 0 <= theta_k <= atan((L-x_k)/(H-y_k)) or (3*pi/2 + atan((H-y_k)/x_k)) <= theta_k <= 2*pi:
-        regionF = 1
-    elif atan((L-x_k)/(H-y_k)) <= theta_k <= (pi/2 + atan(y_k/(L-x_k))):
-        regionF = 2
-    elif (pi/2 + atan(y_k/(L-x_k))) <= theta_k <= (pi + atan(x_k/y_k)):
-        regionF = 3
-    elif (pi + atan(x_k/y_k)) <= theta_k <= (3*pi/2 + atan((H-y_k)/x_k)):
-        regionF = 4
-
-    if regionF == None:
-        print("Something has gone horribly wrong with Front LIDAR")
-        return
-
-
-    if 0 <= theta_k <= atan(y_k/(L-x_k)) or (3*pi/2 + atan((L-x_k)/(H-y_k))) <= theta_k <= 2*pi:
-        regionR = 1
-    elif atan(y_k/(L-x_k)) <= theta_k <= (pi/2 + atan(x_k/y_k)):
-        regionR = 2
-    elif (pi/2 + atan(x_k/y_k)) <= theta_k <= (pi + atan((H-y_k)/x_k)):
-        regionR = 3
-    elif (pi + atan((H-y_k)/x_k)) <= theta_k <= (3*pi/2 + atan((L-x_k)/(H-y_k))):
-        regionR = 4
-
-    if regionR == None:
-        print("Something has gone horribly wrong with Right LIDAR")
-        return
-
-    '''
-
 
     # Take Readings
     l1_k = L - x_k
@@ -134,46 +98,6 @@ def simulate_step(state_k, input_k):
     return next_state, sensor_readings
 
 
-'''
-# Front LIDAR function
-def f1(state_k, regionF):
-    x_k = state_k[0]
-    y_k = state_k[1]
-    theta_k = state_k[2]
-
-    if regionF == 1:
-        return ((H-y_k)/cos(theta_k))
-    elif regionF == 2:
-        return ((L-x_k)/sin(theta_k))
-    elif regionF == 3:
-        return(-y_k/cos(theta_k))
-    elif regionF == 4:
-        return(-x_k/sin(theta_k))
-    else:
-        print("Bad Front Region")
-        return
-
-
-
-def f2(state_k, regionR):
-    x_k = state_k[0]
-    y_k = state_k[1]
-    theta_k = state_k[2]
-
-    if regionR == 1:
-        return ((L-x_k)/cos(theta_k))
-    elif regionR == 2:
-        return (y_k/sin(theta_k))
-    elif regionR == 3:
-        return(-x_k/cos(theta_k))
-    elif regionR == 4:
-        return(-(H-y_k)/sin(theta_k))
-    else:
-        print("Bad Right Region")
-        return
-
-'''
-
 
 def plot_path(state_list):
     x = []
@@ -184,8 +108,8 @@ def plot_path(state_list):
         y.append(states[1])
 
     f = plt.figure(1)
-    plt.xlim((0,1))
-    plt.ylim((0,1))
+    plt.xlim((0,L))
+    plt.ylim((0,H))
     f.set_figheight(5)
     f.set_figwidth(5)
     plt.plot(x,y)
@@ -199,8 +123,17 @@ def plot_path(state_list):
 if __name__ == "__main__":
     init_state = (0.5, 0.5, 0.0)
     input_list = []
-    for i in np.arange(300):
-        input_list.append((-1.0, 0.0))
+    for i in np.arange(100):
+        input_list.append((1.0, -0.2))
+
+    for i in np.arange(100):
+        input_list.append((1.0, -1.0))
+
+    for i in np.arange(100):
+        input_list.append((0.2, -1.0))
+
+    for i in np.arange(500):
+        input_list.append((1.0, -1.0))
 
     state_list, sensor_list = simulate(input_list, init_state)
     plot_path(state_list)
