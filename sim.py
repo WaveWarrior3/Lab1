@@ -10,8 +10,6 @@ H = 1  # Width of arena
 d = 0.05    # wheel diameter
 w = 0.09    # width of robot
 delta_t = 0.1   # time step in seconds
-x0 = 0
-y0 = 0      # initial coordinates of robot
 B_x = 0     # Earth's magnetic field, replace later
 B_y = 1
 
@@ -113,13 +111,14 @@ def plot_path(state_list):
     f.set_figheight(5)
     f.set_figwidth(5)
     plt.plot(x,y)
+    plt.title("Path of Car")
     plt.show()
 
     
 
 
 if __name__ == "__main__":
-    init_state = (0.5, 0.5, pi)
+    init_state = (0.5, 0.5, 0.0)
     input_list = []
     for i in np.arange(100):
         input_list.append((1.0, -0.2))
@@ -132,6 +131,12 @@ if __name__ == "__main__":
 
     for i in np.arange(500):
         input_list.append((1.0, -1.0))
+
+    print("Input Data: (Left Wheel (+ is forward), Right Wheel (- is forward))")
+    print("(1.0, -0.2) for 100 time steps")
+    print("(1.0, -1.0) for 100 time steps")
+    print("(0.2, -1.0) for 100 time steps")
+    print("(1.0, -1.0) for 500 time steps")
 
     state_list, sensor_list = simulate(input_list, init_state)
     plot_path(state_list)
