@@ -20,7 +20,7 @@ tanScale = [0.5, 1, 2, 4, 8]
 #plt.plot(pwmWithDB,RPMwithDB)
 
 for s in np.arange(len(tanScale)):
-    pwm = np.arange(-1,1,0.01);
+    pwm = np.arange(-1,1,0.01)
     RPM = np.tanh(pwm*np.pi/(tanScale[s]))
     RPM = RPM * 100/RPM[-1]
     plt.plot(pwm,RPM)
