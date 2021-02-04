@@ -9,7 +9,6 @@ L = 1  # Length of arena
 H = 1  # Width of arena
 d = 0.05    # wheel diameter
 w = 0.09    # width of robot
-delta_t = 0.1   # time step in seconds
 B_x = 0     # Earth's magnetic field, replace later
 B_y = 1
 
@@ -17,21 +16,21 @@ B_y = 1
 
 
 # run a full simulation
-def simulate(input_list, init_state):
+def simulate(input_list, init_state, delta_t):
     state_list = []
     sensor_list = []
     
     state = init_state
     for inputs in input_list:
         state_list.append(state)
-        state, sensor = simulate_step(state, inputs)
+        state, sensor = simulate_step(state, inputs, delta_t)
         sensor_list.append(sensor)
     
     return state_list, sensor_list
 
 
 # simulate one time step
-def simulate_step(state_k, input_k):
+def simulate_step(state_k, input_k, delta_t):
     '''
     Inputs:
     state_t: tuple of x, y, and theta at time k, in that order
@@ -138,5 +137,7 @@ if __name__ == "__main__":
     print("(0.2, -1.0) for 100 time steps")
     print("(1.0, -1.0) for 500 time steps")
 
-    state_list, sensor_list = simulate(input_list, init_state)
+    delta_t = 0.1   #length of time step
+
+    state_list, sensor_list = simulate(input_list, init_state, delta_t)
     plot_path(state_list)
